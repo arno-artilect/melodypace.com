@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Melody Pace | Official Website</title>
+  <!-- Google Fonts + Font Awesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0a0a;
+      color: #f0f0f0;
+      line-height: 1.5;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    /* floating music notes */
+    .floating-note {
+      position: fixed;
+      font-size: 1.4rem;
+      opacity: 0.12;
+      pointer-events: none;
+      z-index: 0;
+      animation: floatNote 12s infinite ease-in-out;
+    }
+    @keyframes floatNote {
+      0% { transform: translateY(0px) rotate(0deg); opacity: 0.1; }
+      50% { transform: translateY(-40px) rotate(10deg); opacity: 0.25; }
+      100% { transform: translateY(0px) rotate(0deg); opacity: 0.1; }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* header + cart icon */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .logo {
+      font-size: 1.9rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff, #c084fc, #a855f7);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.5px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+    .nav-links a {
+      color: #ddd;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+    .nav-links a:hover {
+      color: #c084fc;
+    }
+    .cart-icon {
+      position: relative;
+      cursor: pointer;
+      font-size: 1.4rem;
+    }
+    .cart-count {
+      position: absolute;
+      top: -8px;
+      right: -12px;
+      background: #c084fc;
+      color: #000;
+      font-size: 0.7rem;
+      font-weight: bold;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    @media (max-width: 768px) {
+      .header-inner { flex-direction: column; gap: 12px; }
+      .nav-links { gap: 24px; flex-wrap: wrap; justify-content: center; }
+    }
+
+    /* hero */
+    .hero {
+      position: relative;
+      min-height: 85vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+    .hero-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+      transition: transform 0.3s ease-out;
+    }
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%);
+      z-index: -1;
+    }
+    .hero-content {
+      max-width: 850px;
+      padding: 24px;
+      animation: fadeUp 1s ease-out;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero-content h1 { font-size: 4rem; font-weight: 800; margin-bottom: 20px; text-shadow: 0 0 20px rgba(0,0,0,0.5); }
+    .hero-content p { font-size: 1.2rem; margin-bottom: 32px; opacity: 0.9; }
+    .btn {
+      display: inline-block;
+      background: linear-gradient(90deg, #c084fc, #a855f7);
+      color: #0a0a0a;
+      font-weight: 700;
+      padding: 12px 34px;
+      border-radius: 40px;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 14px rgba(168,85,247,0.3);
+    }
+    .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(168,85,247,0.5); }
+    @media (max-width: 640px) {
+      .hero-content h1 { font-size: 2.6rem; }
+      .hero-content p { font-size: 1rem; }
+    }
+
+    /* fade-in on scroll */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(25px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    section { padding: 90px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .section-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 55px; text-align: center; }
+    .section-title span { background: linear-gradient(120deg, #c084fc, #a855f7); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+    /* products grid */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 30px;
+      margin-top: 20px;
+    }
+    .product-card {
+      background: #141414;
+      border-radius: 24px;
+      overflow: hidden;
+      transition: 0.3s;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .product-card:hover { transform: translateY(-6px); border-color: #c084fc40; box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
+    .product-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+    .product-info { padding: 20px; }
+    .product-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+    .product-price { color: #c084fc; font-weight: 600; margin-bottom: 16px; }
+    .add-to-cart {
+      background: transparent;
+      border: 1px solid #c084fc;
+      color: #c084fc;
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      width: 100%;
+    }
+    .add-to-cart:hover { background: #c084fc; color: #000; }
+
+    /* cart drawer */
+    .cart-drawer {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 360px;
+      height: 100%;
+      background: #111;
+      z-index: 200;
+      padding: 24px;
+      transition: right 0.3s ease;
+      box-shadow: -5px 0 25px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+    }
+    .cart-drawer.open { right: 0; }
+    .cart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    .close-cart { cursor: pointer; font-size: 1.8rem; }
+    .cart-items { flex: 1; overflow-y: auto; margin-bottom: 20px; }
+    .cart-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #333;
+    }
+    .cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 12px; }
+    .cart-item-details { flex: 1; }
+    .cart-item-title { font-weight: 600; }
+    .cart-item-price { color: #c084fc; }
+    .remove-item { color: #ff6b6b; cursor: pointer; font-size: 0.8rem; margin-top: 5px; display: inline-block; }
+    .cart-total { font-size: 1.2rem; font-weight: 700; margin: 16px 0; text-align: right; }
+    .checkout-btn {
+      background: linear-gradient(90deg, #c084fc, #a855f7);
+      border: none;
+      padding: 12px;
+      border-radius: 40px;
+      font-weight: 700;
+      width: 100%;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    /* other sections (videos, tour, news, contact) - same as before */
+    .video-carousel { overflow: hidden; border-radius: 24px; }
+    .video-track { display: flex; gap: 30px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; padding-bottom: 20px; }
+    .video-card { flex: 0 0 300px; scroll-snap-align: start; background: #141414; border-radius: 20px; overflow: hidden; cursor: pointer; transition: 0.3s; }
+    .video-card:hover { transform: translateY(-8px); box-shadow: 0 20px 30px rgba(168,85,247,0.2); }
+    .video-card img { width: 100%; height: 180px; object-fit: cover; }
+    .video-card h3 { padding: 16px 16px 20px; font-size: 1rem; }
+    .pagination-dots { display: flex; justify-content: center; gap: 12px; margin-top: 30px; }
+    .dot { width: 8px; height: 8px; background: #444; border-radius: 50%; cursor: pointer; transition: 0.2s; }
+    .dot.active { background: #c084fc; width: 28px; border-radius: 12px; }
+    .tour-list { max-width: 750px; margin: 0 auto; }
+    .tour-item { display: flex; flex-wrap: wrap; justify-content: space-between; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .tour-date { font-weight: 700; min-width: 110px; }
+    .tour-venue { flex: 2; padding: 0 16px; }
+    .tour-location { flex: 1; color: #aaa; }
+    .tour-link a { color: #c084fc; text-decoration: none; }
+    .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 30px; }
+    .news-card { background: #141414; border-radius: 24px; padding: 28px; transition: 0.3s; }
+    .news-card:hover { transform: translateY(-6px); border-color: #c084fc40; }
+    .news-card h3 { font-size: 1.3rem; margin-bottom: 12px; }
+    .news-date { color: #c084fc; font-size: 0.8rem; margin-bottom: 12px; display: block; }
+    .contact-form { max-width: 580px; margin: 0 auto; background: rgba(20,20,20,0.7); backdrop-filter: blur(4px); padding: 40px; border-radius: 32px; }
+    .form-group { margin-bottom: 24px; }
+    input, textarea { width: 100%; padding: 14px 20px; background: #1e1e1e; border: 1px solid #2c2c2c; border-radius: 40px; color: #fff; }
+    input:focus, textarea:focus { outline: none; border-color: #c084fc; box-shadow: 0 0 0 3px rgba(192,132,252,0.2); }
+    button[type="submit"] { background: linear-gradient(90deg, #c084fc, #a855f7); border: none; padding: 14px; border-radius: 40px; font-weight: 700; width: 100%; cursor: pointer; }
+    footer { padding: 60px 0 40px; text-align: center; }
+    .social-icons { display: flex; justify-content: center; gap: 32px; margin-bottom: 30px; }
+    .social-icons a { color: #bbb; font-size: 1.7rem; transition: 0.2s; }
+    .social-icons a:hover { color: #c084fc; transform: translateY(-3px); }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-content { width: 90%; max-width: 1000px; background: #000; border-radius: 24px; overflow: hidden; }
+    .modal iframe { width: 100%; aspect-ratio: 16 / 9; }
+    .close-modal { position: absolute; top: 20px; right: 30px; font-size: 40px; color: white; cursor: pointer; }
+    .parallax-bg { background-attachment: fixed; background-position: center; background-repeat: no-repeat; background-size: cover; }
+    @media (max-width: 1024px) { .parallax-bg { background-attachment: scroll; } }
+  </style>
+</head>
+<body>
+
+<div class="floating-note" style="top: 15%; left: 5%; animation-duration: 14s;">♪</div>
+<div class="floating-note" style="top: 40%; right: 3%; animation-duration: 18s; animation-delay: 2s;">♫</div>
+<div class="floating-note" style="bottom: 20%; left: 8%; animation-duration: 12s; animation-delay: 1s;">♪</div>
+<div class="floating-note" style="top: 70%; right: 10%; animation-duration: 20s;">♬</div>
+
+<header>
+  <div class="container header-inner">
+    <div class="logo">MELODYPACE</div>
+    <div class="nav-links">
+      <a href="#home">Home</a>
+      <a href="#videos">Videos</a>
+      <a href="#tour">Tour</a>
+      <a href="#news">News</a>
+      <a href="#shop">Shop</a>
+      <a href="#contact">Contact</a>
+      <div class="cart-icon" id="cartIcon">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-count" id="cartCount">0</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Hero section (unchanged) -->
+  <section id="home" class="hero">
+    <video class="hero-video" autoplay muted loop playsinline poster="https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2">
+      <source src="https://player.vimeo.com/external/371128324.sd.mp4?s=42f1f6e1bcc9a00816ea4f97d76f8aefd8463d83&profile_id=164&oauth2_token_id=57447761" type="video/mp4">
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1>Melody Pace</h1>
+      <p>Raw, authentic country rock for a new generation.</p>
+      <a href="#shop" class="btn">Shop Merch</a>
+    </div>
+  </section>
+
+  <!-- Videos section -->
+  <section id="videos">
+    <div class="container">
+      <h2 class="section-title fade-in">Watch <span>Now</span></h2>
+      <div class="video-carousel fade-in">
+        <div class="video-track" id="videoTrack"></div>
+        <div class="pagination-dots" id="paginationDots"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tour dates with parallax -->
+  <section id="tour" class="parallax-bg" style="background-image: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.85)), url('https://images.pexels.com/photos/1105666/concert-3384262_1920.jpg?auto=compress&cs=tinysrgb&w=1600'); background-attachment: fixed;">
+    <div class="container">
+      <h2 class="section-title fade-in">Upcoming <span>Shows</span></h2>
+      <div class="tour-list fade-in" id="tourList"></div>
+    </div>
+  </section>
+
+  <!-- News section -->
+  <section id="news">
+    <div class="container">
+      <h2 class="section-title fade-in">Latest <span>News</span></h2>
+      <div class="news-grid" id="newsGrid"></div>
+    </div>
+  </section>
+
+  <!-- SHOP DEMO (5 products) -->
+  <section id="shop">
+    <div class="container">
+      <h2 class="section-title fade-in">Official <span>Merch</span></h2>
+      <div class="products-grid fade-in" id="productsGrid"></div>
+    </div>
+  </section>
+
+  <!-- Contact form -->
+  <section id="contact">
+    <div class="container">
+      <h2 class="section-title fade-in">Get in <span>Touch</span></h2>
+      <div class="contact-form fade-in">
+        <form id="contactForm" action="https://formspree.io/f/YOUR_ENDPOINT" method="POST">
+          <div class="form-group"><input type="text" name="name" placeholder="Your name" required></div>
+          <div class="form-group"><input type="email" name="email" placeholder="Email address" required></div>
+          <div class="form-group"><textarea rows="4" name="message" placeholder="Your message..." required></textarea></div>
+          <button type="submit">Send message</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="social-icons" id="socialIcons"></div>
+    <div class="copyright">© 2026 Melody Pace. All rights reserved.</div>
+  </div>
+</footer>
+
+<!-- Cart Drawer -->
+<div id="cartDrawer" class="cart-drawer">
+  <div class="cart-header">
+    <span>Your Cart</span>
+    <span class="close-cart" id="closeCartBtn">&times;</span>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-total" id="cartTotal">Total: R0</div>
+  <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
+</div>
+
+<!-- Video Modal -->
+<div id="videoModal" class="modal">
+  <span class="close-modal">&times;</span>
+  <div class="modal-content"><iframe id="modalIframe" src="" allowfullscreen></iframe></div>
+</div>
+
+<script>
+  // ------------------------------------------------------------
+  // ALL DATA (JSON)
+  // ------------------------------------------------------------
+  // Products (5 items)
+  const productsData = [
+    { id: 1, name: "Midnight Rain T-Shirt", price: 350, image: "https://placehold.co/600x600/1e1e2f/c084fc?text=TSHIRT", description: "Cotton blend, limited edition" },
+    { id: 2, name: "Signed CD – Debut EP", price: 120, image: "https://placehold.co/600x600/1e1e2f/c084fc?text=CD", description: "Autographed by Melody" },
+    { id: 3, name: "Vinyl LP 'Wildfire'", price: 450, image: "https://placehold.co/600x600/1e1e2f/c084fc?text=VINYL", description: "180g black vinyl" },
+    { id: 4, name: "Melody Pace Hoodie", price: 620, image: "https://placehold.co/600x600/1e1e2f/c084fc?text=HOODIE", description: "Comfort hoodie with logo" },
+    { id: 5, name: "Concert Poster (Signed)", price: 180, image: "https://placehold.co/600x600/1e1e2f/c084fc?text=POSTER", description: "Limited run" }
+  ];
+
+  // social, videos, tour, news (same as before)
+  const socialData = [
+    { platform: "instagram", url: "https://instagram.com/melodypace", icon: "fab fa-instagram" },
+    { platform: "spotify", url: "https://open.spotify.com/artist/example", icon: "fab fa-spotify" },
+    { platform: "youtube", url: "https://youtube.com/@melodypace", icon: "fab fa-youtube" },
+    { platform: "tiktok", url: "https://tiktok.com/@melodypace", icon: "fab fa-tiktok" },
+    { platform: "facebook", url: "https://facebook.com/melodypace", icon: "fab fa-facebook-f" }
+  ];
+
+  const videosData = [
+    { id: "w2P51ncJysI", title: "Midnight Rain (Official Visualizer)" },
+    { id: "IcrbM1l_BoI", title: "Behind the Scenes – Studio Diary" },
+    { id: "J2CjQRJYf0M", title: "Acoustic Session: Wildflower" },
+    { id: "hT_nvWreIhg", title: "Live at The Roxy (Full Set)" },
+    { id: "sF_87FW8Mzw", title: "Interview: The Story So Far" }
+  ];
+
+  const tourData = [
+    { date: "JUN 18, 2026", venue: "The Basement East", location: "Nashville, TN", ticketUrl: "#" },
+    { date: "JUN 25, 2026", venue: "Mercury Lounge", location: "New York, NY", ticketUrl: "#" },
+    { date: "JUL 09, 2026", venue: "The Troubadour", location: "West Hollywood, CA", ticketUrl: "#" },
+    { date: "JUL 23, 2026", venue: "Lincoln Hall", location: "Chicago, IL", ticketUrl: "#" }
+  ];
+
+  const newsData = [
+    { title: "New Single 'Wildfire' Out Now", date: "May 12, 2026", excerpt: "Stream the explosive new track, produced with multi-platinum songwriter." },
+    { title: "Summer Tour Announced", date: "April 28, 2026", excerpt: "Melody announces 15-city tour across North America. Presale starts May 1." },
+    { title: "Featured on Spotify's 'Fresh Finds'", date: "April 10, 2026", excerpt: "Our single 'Dirt Roads' lands on Spotify's influential rising artist playlist." }
+  ];
+
+  // -------------------------------
+  // Cart functionality (localStorage)
+  // -------------------------------
+  let cart = JSON.parse(localStorage.getItem('melodyCart')) || [];
+
+  function saveCart() { localStorage.setItem('melodyCart', JSON.stringify(cart)); updateCartUI(); }
+
+  function addToCart(product) {
+    const existing = cart.find(item => item.id === product.id);
+    if (existing) existing.quantity++;
+    else cart.push({ ...product, quantity: 1 });
+    saveCart();
+  }
+
+  function removeFromCart(id) {
+    cart = cart.filter(item => item.id !== id);
+    saveCart();
+  }
+
+  function updateQuantity(id, delta) {
+    const item = cart.find(i => i.id === id);
+    if (item) {
+      item.quantity += delta;
+      if (item.quantity <= 0) removeFromCart(id);
+      else saveCart();
+    }
+  }
+
+  function updateCartUI() {
+    const cartCount = cart.reduce((sum, i) => sum + i.quantity, 0);
+    document.getElementById('cartCount').innerText = cartCount;
+    const cartItemsDiv = document.getElementById('cartItems');
+    const cartTotalSpan = document.getElementById('cartTotal');
+    if (!cartItemsDiv) return;
+    if (cart.length === 0) {
+      cartItemsDiv.innerHTML = '<p>Your cart is empty.</p>';
+      cartTotalSpan.innerText = 'Total: R0';
+      return;
+    }
+    let total = 0;
+    cartItemsDiv.innerHTML = cart.map(item => {
+      total += item.price * item.quantity;
+      return `
+        <div class="cart-item">
+          <img src="${item.image}" alt="${item.name}">
+          <div class="cart-item-details">
+            <div class="cart-item-title">${item.name}</div>
+            <div class="cart-item-price">R${item.price}</div>
+            <div>Qty: 
+              <button class="qty-btn" data-id="${item.id}" data-delta="-1">-</button>
+              ${item.quantity}
+              <button class="qty-btn" data-id="${item.id}" data-delta="1">+</button>
+            </div>
+            <span class="remove-item" data-id="${item.id}">Remove</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+    cartTotalSpan.innerText = `Total: R${total}`;
+    // attach event handlers to new buttons
+    document.querySelectorAll('.qty-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = parseInt(btn.dataset.id);
+        const delta = parseInt(btn.dataset.delta);
+        updateQuantity(id, delta);
+      });
+    });
+    document.querySelectorAll('.remove-item').forEach(rm => {
+      rm.addEventListener('click', (e) => {
+        const id = parseInt(rm.dataset.id);
+        removeFromCart(id);
+      });
+    });
+  }
+
+  // Render products grid
+  function renderProducts() {
+    const grid = document.getElementById('productsGrid');
+    if (!grid) return;
+    grid.innerHTML = productsData.map(p => `
+      <div class="product-card">
+        <img class="product-img" src="${p.image}" alt="${p.name}">
+        <div class="product-info">
+          <div class="product-title">${p.name}</div>
+          <div class="product-price">R${p.price}</div>
+          <button class="add-to-cart" data-id="${p.id}">Add to Cart</button>
+        </div>
+      </div>
+    `).join('');
+    document.querySelectorAll('.add-to-cart').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = parseInt(btn.dataset.id);
+        const product = productsData.find(p => p.id === id);
+        if (product) addToCart(product);
+      });
+    });
+  }
+
+  // Cart drawer controls
+  const cartDrawer = document.getElementById('cartDrawer');
+  const cartIcon = document.getElementById('cartIcon');
+  const closeCartBtn = document.getElementById('closeCartBtn');
+  if (cartIcon) cartIcon.addEventListener('click', () => cartDrawer.classList.add('open'));
+  if (closeCartBtn) closeCartBtn.addEventListener('click', () => cartDrawer.classList.remove('open'));
+  if (document.getElementById('checkoutBtn')) {
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
+      alert('This is a demo. Full checkout will be integrated soon.');
+    });
+  }
+
+  // Helper functions for videos, tour, news, social
+  function getYouTubeThumb(id) { return `https://img.youtube.com/vi/${id}/mqdefault.jpg`; }
+  function renderVideos() {
+    const track = document.getElementById('videoTrack');
+    const dots = document.getElementById('paginationDots');
+    if (!track) return;
+    track.innerHTML = ''; dots.innerHTML = '';
+    videosData.forEach((video, idx) => {
+      const card = document.createElement('div');
+      card.className = 'video-card';
+      card.innerHTML = `<img src="${getYouTubeThumb(video.id)}" alt="${video.title}"><h3>${video.title}</h3>`;
+      card.addEventListener('click', () => openModal(video.id));
+      track.appendChild(card);
+      const dot = document.createElement('div');
+      dot.className = 'dot' + (idx === 0 ? ' active' : '');
+      dot.addEventListener('click', () => {
+        track.scrollTo({ left: card.offsetLeft - track.offsetLeft, behavior: 'smooth' });
+        updateActiveDot(idx);
+      });
+      dots.appendChild(dot);
+    });
+    track.addEventListener('scroll', () => {
+      let active = 0;
+      [...track.children].forEach((c, i) => {
+        if (track.scrollLeft >= c.offsetLeft - 100) active = i;
+      });
+      updateActiveDot(active);
+    });
+  }
+  function updateActiveDot(active) {
+    const dots = document.querySelectorAll('.dot');
+    dots.forEach((d, i) => d.classList.toggle('active', i === active));
+  }
+  function renderTour() { const container = document.getElementById('tourList'); if(container) container.innerHTML = tourData.map(t => `<div class="tour-item"><div class="tour-date">${t.date}</div><div class="tour-venue">${t.venue}</div><div class="tour-location">${t.location}</div><div class="tour-link"><a href="${t.ticketUrl}" target="_blank">Tickets →</a></div></div>`).join(''); }
+  function renderNews() { const container = document.getElementById('newsGrid'); if(container) container.innerHTML = newsData.map(n => `<div class="news-card"><h3>${n.title}</h3><span class="news-date">${n.date}</span><p class="news-excerpt">${n.excerpt}</p></div>`).join(''); }
+  function renderSocials() { const container = document.getElementById('socialIcons'); if(container) container.innerHTML = socialData.map(s => `<a href="${s.url}" target="_blank"><i class="${s.icon}"></i></a>`).join(''); }
+
+  // Modal
+  const modal = document.getElementById('videoModal');
+  const modalIframe = document.getElementById('modalIframe');
+  function openModal(id) { modalIframe.src = `https://www.youtube.com/embed/${id}?autoplay=1`; modal.style.display = 'flex'; }
+  function closeModal() { modalIframe.src = ''; modal.style.display = 'none'; }
+  document.querySelector('.close-modal')?.addEventListener('click', closeModal);
+  window.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+  // Fade-in on scroll
+  const faders = document.querySelectorAll('.fade-in');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.2 });
+  faders.forEach(f => observer.observe(f));
+
+  // Hero video parallax
+  window.addEventListener('scroll', () => {
+    const heroVideo = document.querySelector('.hero-video');
+    if (heroVideo && window.scrollY < 600) heroVideo.style.transform = `scale(1.02) translateY(${window.scrollY * 0.1}px)`;
+  });
+
+  // Contact form alert
+  document.getElementById('contactForm')?.addEventListener('submit', (e) => setTimeout(() => alert('Thanks! We’ll be in touch soon.'), 100));
+
+  // Initialize all
+  renderProducts();
+  renderVideos();
+  renderTour();
+  renderNews();
+  renderSocials();
+  updateCartUI();
+</script>
+</body>
+</html>
